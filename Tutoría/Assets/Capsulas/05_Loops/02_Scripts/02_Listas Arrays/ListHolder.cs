@@ -10,8 +10,13 @@ public class ListHolder : MonoBehaviour
         if (other.gameObject.CompareTag("list")) // Si el objeto tiene el tag "list"
         {
             gameObjectsOnList.Add(FindObjectOfType<InstantiateListsEx>().listItem); // Se añade el objeto de la clase InstantiateListsEx a la lista
-            Destroy(other.gameObject); // Se destruye el objeto
+            //Destroy(other.gameObject); // Se destruye el objeto
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        
     }
 
     private void Update()
