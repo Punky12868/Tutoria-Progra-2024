@@ -4,7 +4,10 @@ public class ButtonPressGrab : MonoBehaviour
 {
     [SerializeField] private Transform grabPoint;
     [SerializeField] private float grabRange = 5;
-    [SerializeField] private LayerMask grabMask;
+
+    [SerializeField] private bool usingLayerMask;
+    [SerializeField] private LayerMask GrabMask;
+    [SerializeField] private LayerMask IgnoreMask;
 
     [SerializeField] private bool usingLerp = false;
     [SerializeField] private float grabTime = 1;
@@ -44,19 +47,44 @@ public class ButtonPressGrab : MonoBehaviour
     private void GrabObject()
     {
         RaycastHit hit;
-        if (Physics.Raycast(cameraPos.position, cameraPos.forward, out hit, grabRange, grabMask))
+
+        if (usingLayerMask)
         {
-            if (!usingLerp)
+            if (Physics.Raycast(cameraPos.position, cameraPos.forward, out hit, grabRange, GrabMask))
             {
-                target = hit.transform;
-                target.GetComponent<Rigidbody>().isKinematic = true;
-                target.transform.SetParent(grabPoint);
-                target.transform.localPosition = Vector3.zero;
+                if (!usingLerp)
+                {
+                    target = hit.transform;
+                    target.GetComponent<Rigidbody>().isKinematic = true;
+                    target.transform.SetParent(grabPoint);
+                    target.transform.localPosition = Vector3.zero;
+                }
+                else
+                {
+                    target = hit.transform;
+                    target.GetComponent<Rigidbody>().useGravity = false;
+                }
             }
-            else
+        }
+        else
+        {
+            if (Physics.Raycast(cameraPos.position, cameraPos.forward, out hit, grabRange, ~IgnoreMask))
             {
-                target = hit.transform;
-                target.GetComponent<Rigidbody>().useGravity = false;
+                if (hit.transform.GetComponent<r_Item>())
+                {
+                    if (!usingLerp)
+                    {
+                        target = hit.transform;
+                        target.GetComponent<Rigidbody>().isKinematic = true;
+                        target.transform.SetParent(grabPoint);
+                        target.transform.localPosition = Vector3.zero;
+                    }
+                    else
+                    {
+                        target = hit.transform;
+                        target.GetComponent<Rigidbody>().useGravity = false;
+                    }
+                }
             }
         }
     }
